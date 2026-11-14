@@ -1,0 +1,169 @@
+<Window x:Class="HotVirtualKeyboard.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Touch Keyboard"
+        Height="310" Width="840"
+        MinHeight="180" MinWidth="420"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        ShowActivated="False"
+        ShowInTaskbar="False"
+        Visibility="Collapsed"
+        TextOptions.TextFormattingMode="Display"
+        RenderOptions.ClearTypeHint="Enabled">
+
+    <!-- Windows 10 Touch Keyboard Shell (Border acts as draggable resize boundary) -->
+    <Border x:Name="RootBorder" Background="{DynamicResource KbBgBrush}" BorderBrush="{DynamicResource KbBorderBrush}" BorderThickness="2" CornerRadius="6">
+        <Grid>
+            <Grid.RowDefinitions>
+                <!-- Windows 10 Unified Prediction & Command Bar -->
+                <RowDefinition Height="38"/>
+                <!-- Collapsible Interactive Resize Bar -->
+                <RowDefinition Height="Auto"/>
+                <!-- Main Touch Key Matrix -->
+                <RowDefinition Height="*"/>
+                <!-- Windows 10 Floating Drag Bar (Visible in Floating mode) -->
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- ROW 0: Windows 10 Candidate & Command Bar -->
+            <Grid Grid.Row="0" x:Name="HeaderBar" Background="{DynamicResource KbHeaderBgBrush}" MouseLeftButtonDown="HeaderBar_MouseLeftButtonDown">
+                <Grid.ColumnDefinitions>
+                    <!-- Left: Word Predictions -->
+                    <ColumnDefinition Width="*"/>
+                    <!-- Center: Floating Drag Pill (when floating) -->
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- Right: Keyboard Tools -->
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Word Suggestions & Voice Typing Banner -->
+                <Grid Grid.Column="0" VerticalAlignment="Center">
+                    <ItemsControl x:Name="SuggestionsContainer" Margin="6,0,0,0" VerticalAlignment="Center">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+
+                    <!-- Voice Typing Active Banner -->
+                    <Border x:Name="VoiceIndicatorBanner" Background="{DynamicResource AccentGlowBrush}" 
+                            BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="4" 
+                            Margin="6,2" Padding="10,2" Visibility="Collapsed" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Ellipse Width="8" Height="8" Fill="#EF4444" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="🎙 Listening... Speak now (Win+H Voice Input)" FontSize="12" FontWeight="SemiBold" 
+                                       Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                            <Button Content="✕ Stop" Click="BtnStopVoice_Click" Style="{StaticResource Win10SuggestionStyle}" 
+                                    Height="22" Padding="8,0" Margin="10,0,0,0" FontSize="11" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Floating Drag Handle (Pill) -->
+                <Border Grid.Column="1" x:Name="DragPillHandle" Background="{DynamicResource TextMutedBrush}" CornerRadius="2" Width="40" Height="4" 
+                        VerticalAlignment="Center" Margin="10,0" Cursor="SizeAll" Visibility="Collapsed"/>
+
+                <!-- Right Tools (Voice, Layout, Dock, Resize, Settings, Dismiss) -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,6,0">
+                    <!-- Lockscreen Indicator Badge -->
+                    <Border x:Name="LockBadge" Background="#EF4444" CornerRadius="3" Margin="0,0,6,0" Padding="5,1" Visibility="Collapsed" VerticalAlignment="Center">
+                        <TextBlock Text="LOCKSCREEN" FontSize="9" FontWeight="Bold" Foreground="White"/>
+                    </Border>
+
+                    <!-- Voice Input Button -->
+                    <Button x:Name="BtnVoiceInput" Content="🎙" Style="{StaticResource Win10HeaderIconStyle}" ToolTip="Voice Typing / Dictation (Win+H)" Click="BtnVoiceInput_Click"/>
+
+                    <!-- Layout Switcher Button -->
+                    <Button x:Name="BtnLayoutMenu" Content="⌨" Style="{StaticResource Win10HeaderIconStyle}" ToolTip="Change Layout" Click="BtnLayoutMenu_Click"/>
+
+                    <!-- Dock / Float Toggle -->
+                    <Button x:Name="BtnDockToggle" Content="⤓" Style="{StaticResource Win10HeaderIconStyle}" ToolTip="Toggle Dock / Float" Click="BtnDockToggle_Click"/>
+
+                    <!-- Dedicated Resize Button Alongside Settings -->
+                    <Button x:Name="BtnResize" Content="⤡" FontSize="16" Style="{StaticResource Win10HeaderIconStyle}" ToolTip="Resize Keyboard" Click="BtnResize_Click"/>
+
+                    <!-- Settings Button -->
+                    <Button x:Name="BtnSettings" Content="⚙" Style="{StaticResource Win10HeaderIconStyle}" ToolTip="Settings" Click="BtnSettings_Click"/>
+
+                    <!-- Dismiss / Hide Keyboard (Chevron Down like Windows 10) -->
+                    <Button x:Name="BtnDismiss" Content="⌄" FontSize="18" FontWeight="Bold" Style="{StaticResource Win10HeaderIconStyle}" ToolTip="Close Keyboard" Click="BtnDismiss_Click"/>
+                </StackPanel>
+
+                <!-- Layout Context Menu for Quick Layout Selection -->
+                <Grid.ContextMenu>
+                    <ContextMenu Background="#252525" Foreground="#FFFFFF" BorderBrush="#3D3D3D">
+                        <MenuItem Header="Windows 10 Touch Keyboard" Tag="touch" Click="MenuItemLayout_Click"/>
+                        <MenuItem Header="Windows 10 Full Keyboard (5-Row)" Tag="full" Click="MenuItemLayout_Click"/>
+                        <MenuItem Header="Windows 10 PIN / Numpad" Tag="numpad" Click="MenuItemLayout_Click"/>
+                        <MenuItem Header="Windows 10 Symbols (&amp;123)" Tag="symbol" Click="MenuItemLayout_Click"/>
+                        <Separator Background="#383838"/>
+                        <MenuItem Header="🎨 Keyboard Themes">
+                            <MenuItem Header="Windows 10/11 Fluent (Default)" Tag="DarkFluent" Click="MenuItemTheme_Click"/>
+                            <MenuItem Header="Solid Filled Matte Dark" Tag="SolidFilled" Click="MenuItemTheme_Click"/>
+                            <MenuItem Header="Apple Liquid Glass (iOS Frosted Crystal Glass)" Tag="AppleGlassmorphism" Click="MenuItemTheme_Click"/>
+                            <MenuItem Header="Apple Translucent Blurred (Dark Liquid Glass)" Tag="AppleTranslucentDark" Click="MenuItemTheme_Click"/>
+                        </MenuItem>
+                        <Separator Background="#383838"/>
+                        <MenuItem Header="Dock to Screen Bottom" Click="MenuDockBottom_Click"/>
+                        <MenuItem Header="Floating Mode" Click="MenuDockFloat_Click"/>
+                    </ContextMenu>
+                </Grid.ContextMenu>
+            </Grid>
+
+            <!-- ROW 1: Collapsible Resize Tray (Active on Resize Button click) -->
+            <Border Grid.Row="1" x:Name="ResizeTray" Background="#1E1E22" BorderBrush="#333338" BorderThickness="0,0,0,1" 
+                    Padding="10,6" Visibility="Collapsed">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Resize:" Foreground="#A0A0A8" VerticalAlignment="Center" FontSize="11" Margin="0,0,10,0"/>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Content="Compact" Tag="compact" Click="BtnSizePreset_Click" Style="{StaticResource Win10SuggestionStyle}" Height="26" Padding="10,0" FontSize="11"/>
+                        <Button Content="Standard" Tag="standard" Click="BtnSizePreset_Click" Style="{StaticResource Win10SuggestionStyle}" Height="26" Padding="10,0" FontSize="11"/>
+                        <Button Content="Large" Tag="large" Click="BtnSizePreset_Click" Style="{StaticResource Win10SuggestionStyle}" Height="26" Padding="10,0" FontSize="11"/>
+                        <Button Content="Wide" Tag="wide" Click="BtnSizePreset_Click" Style="{StaticResource Win10SuggestionStyle}" Height="26" Padding="10,0" FontSize="11"/>
+                        <TextBlock Text="💡 Drag any border or corner to freely resize!" Foreground="#757580" FontSize="10" VerticalAlignment="Center" Margin="14,0,0,0"/>
+                    </StackPanel>
+
+                    <Button Grid.Column="2" Content="✕ Close" Click="BtnResizeDone_Click" Style="{StaticResource Win10SuggestionStyle}" 
+                            Height="26" Padding="8,0" FontSize="11"/>
+                </Grid>
+            </Border>
+
+            <!-- ROW 2: Main Touch Key Matrix -->
+            <Grid Grid.Row="2" x:Name="KeyboardMatrixContainer" Margin="4,4,4,4">
+                <!-- Keys are dynamically rendered here -->
+            </Grid>
+
+            <!-- ROW 3: Bottom Floating Drag Bar (when floating) -->
+            <Border Grid.Row="3" x:Name="BottomDragBar" Background="{DynamicResource KbHeaderBgBrush}" Height="14" Cursor="SizeAll" 
+                    MouseLeftButtonDown="HeaderBar_MouseLeftButtonDown" Visibility="Collapsed">
+                <Border Background="{DynamicResource TextMutedBrush}" CornerRadius="2" Width="60" Height="4" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+
+            <!-- Top Specular Fresnel Reflection Arc (Apple Liquid Glass Specular Highlight) -->
+            <Border x:Name="TopFresnelLayer" Grid.Row="0" Grid.RowSpan="4"
+                    CornerRadius="18"
+                    BorderThickness="1.5,1.5,1.5,0"
+                    IsHitTestVisible="False"
+                    Visibility="Collapsed">
+                <Border.BorderBrush>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#E8FFFFFF" Offset="0.0"/>
+                        <GradientStop Color="#60FFFFFF" Offset="0.12"/>
+                        <GradientStop Color="#00FFFFFF" Offset="0.35"/>
+                    </LinearGradientBrush>
+                </Border.BorderBrush>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

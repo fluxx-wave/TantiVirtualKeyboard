@@ -1,0 +1,215 @@
+<Application x:Class="HotVirtualKeyboard.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             ShutdownMode="OnExplicitShutdown">
+    <Application.Resources>
+        <!-- Windows 10 / 11 Fluent Typography -->
+        <FontFamily x:Key="SegoeFluentFont">Segoe UI Variable Display, Segoe UI, Arial, sans-serif</FontFamily>
+
+        <!-- Windows 10 Touch Keyboard Color Palette -->
+        <Color x:Key="KbBgColor">#181818</Color>
+        <Color x:Key="KbHeaderBgColor">#1F1F1F</Color>
+        <Color x:Key="KbBorderColor">#2E2E2E</Color>
+        <Color x:Key="KeyNormalColor">#2C2C2C</Color>
+        <Color x:Key="KeySpecialColor">#222222</Color>
+        <Color x:Key="KeyHoverColor">#383838</Color>
+        <Color x:Key="KeyPressedColor">#0078D4</Color>
+        <Color x:Key="KeyActiveColor">#0078D4</Color>
+        <Color x:Key="TextLightColor">#FFFFFF</Color>
+        <Color x:Key="TextMutedColor">#999999</Color>
+        <Color x:Key="AccentColor">#0078D4</Color>
+
+        <SolidColorBrush x:Key="KbBgBrush" Color="{StaticResource KbBgColor}"/>
+        <SolidColorBrush x:Key="KbHeaderBgBrush" Color="{StaticResource KbHeaderBgColor}"/>
+        <SolidColorBrush x:Key="KbBorderBrush" Color="{StaticResource KbBorderColor}"/>
+        <SolidColorBrush x:Key="KeyNormalBrush" Color="{StaticResource KeyNormalColor}"/>
+        <SolidColorBrush x:Key="KeySpecialBrush" Color="{StaticResource KeySpecialColor}"/>
+        <SolidColorBrush x:Key="KeyHoverBrush" Color="{StaticResource KeyHoverColor}"/>
+        <SolidColorBrush x:Key="KeyPressedBrush" Color="{StaticResource KeyPressedColor}"/>
+        <SolidColorBrush x:Key="KeyActiveBrush" Color="{StaticResource KeyActiveColor}"/>
+        <SolidColorBrush x:Key="TextLightBrush" Color="{StaticResource TextLightColor}"/>
+        <SolidColorBrush x:Key="TextMutedBrush" Color="{StaticResource TextMutedColor}"/>
+        <SolidColorBrush x:Key="KeyBorderBrush" Color="#1AFFFFFF"/>
+        <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}"/>
+        <SolidColorBrush x:Key="AccentHoverBrush" Color="#1E90FF"/>
+        <SolidColorBrush x:Key="AccentGlowBrush" Color="#300078D4"/>
+
+        <!-- Dynamic Geometry & Sheen Resources for Themes (Fluent vs Apple Liquid Glass) -->
+        <CornerRadius x:Key="KeyCornerRadius">4</CornerRadius>
+        <Thickness x:Key="KeyBorderThickness">0,0,0,1</Thickness>
+        <sys:Double x:Key="KeySheenOpacity">0.0</sys:Double>
+
+        <!-- Windows 10 Style Suggestion Button -->
+        <Style x:Key="Win10SuggestionStyle" TargetType="Button">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextLightBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Margin" Value="2,0"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="FontFamily" Value="{StaticResource SegoeFluentFont}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource KeyCornerRadius}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource KeyHoverBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource TextLightBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Windows 10 Style Icon / Header Button -->
+        <Style x:Key="Win10HeaderIconStyle" TargetType="Button">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextLightBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Width" Value="36"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Margin" Value="1,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="{DynamicResource KeyCornerRadius}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource KeyHoverBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource TextLightBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Windows 10 Style Key Button (With Dedicated Accent Tap Flash Layer) -->
+        <Style x:Key="Win10KeyStyle" TargetType="Button">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Background" Value="{DynamicResource KeyNormalBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextLightBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource KeyBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="{DynamicResource KeyBorderThickness}"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="FontFamily" Value="{StaticResource SegoeFluentFont}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{DynamicResource KeyCornerRadius}">
+                            <Grid>
+                                <!-- Top Specular Sheen Layer for Liquid Pebble Keys -->
+                                <Border x:Name="SpecularSheen"
+                                        CornerRadius="{DynamicResource KeyCornerRadius}"
+                                        VerticalAlignment="Top"
+                                        Height="12"
+                                        Opacity="{DynamicResource KeySheenOpacity}"
+                                        IsHitTestVisible="False">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="#A0FFFFFF" Offset="0.0"/>
+                                            <GradientStop Color="#00FFFFFF" Offset="1.0"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+
+                                <!-- Dedicated Accent Flash Highlight Layer -->
+                                <Border x:Name="AccentFlashLayer" 
+                                        Background="{DynamicResource AccentBrush}" 
+                                        CornerRadius="{DynamicResource KeyCornerRadius}" 
+                                        Opacity="0"/>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource KeyHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Windows 10 Special / Function Key Style -->
+        <Style x:Key="Win10SpecialKeyStyle" TargetType="Button">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Background" Value="{DynamicResource KeySpecialBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextLightBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource KeyBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="{DynamicResource KeyBorderThickness}"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="FontFamily" Value="{StaticResource SegoeFluentFont}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{DynamicResource KeyCornerRadius}">
+                            <Grid>
+                                <!-- Top Specular Sheen Layer for Liquid Pebble Keys -->
+                                <Border x:Name="SpecularSheenSpec"
+                                        CornerRadius="{DynamicResource KeyCornerRadius}"
+                                        VerticalAlignment="Top"
+                                        Height="12"
+                                        Opacity="{DynamicResource KeySheenOpacity}"
+                                        IsHitTestVisible="False">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="#A0FFFFFF" Offset="0.0"/>
+                                            <GradientStop Color="#00FFFFFF" Offset="1.0"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+
+                                <!-- Dedicated Accent Flash Highlight Layer -->
+                                <Border x:Name="AccentFlashLayer" 
+                                        Background="{DynamicResource AccentBrush}" 
+                                        CornerRadius="{DynamicResource KeyCornerRadius}" 
+                                        Opacity="0"/>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource KeyHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Application.Resources>
+</Application>
